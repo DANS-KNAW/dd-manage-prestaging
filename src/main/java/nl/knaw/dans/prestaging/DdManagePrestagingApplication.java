@@ -19,6 +19,7 @@ package nl.knaw.dans.prestaging;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import nl.knaw.dans.lib.dataverse.DataverseClient;
 
 public class DdManagePrestagingApplication extends Application<DdManagePrestagingConfiguration> {
 
@@ -38,7 +39,7 @@ public class DdManagePrestagingApplication extends Application<DdManagePrestagin
 
     @Override
     public void run(final DdManagePrestagingConfiguration configuration, final Environment environment) {
-
+        DataverseClient client = configuration.getDataverse().build();
     }
 
 }

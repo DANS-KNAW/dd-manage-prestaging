@@ -18,9 +18,21 @@ package nl.knaw.dans.prestaging;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import nl.knaw.dans.lib.util.DataverseClientFactory;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 public class DdManagePrestagingConfiguration extends Configuration {
 
+    @Valid
+    private DataverseClientFactory dataverse;
+
+    public DataverseClientFactory getDataverse() {
+        return dataverse;
+    }
+
+    public void setDataverse(DataverseClientFactory dataverse) {
+        this.dataverse = dataverse;
+    }
 }

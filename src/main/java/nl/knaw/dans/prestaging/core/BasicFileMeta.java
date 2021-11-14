@@ -17,11 +17,27 @@ package nl.knaw.dans.prestaging.core;
 
 import nl.knaw.dans.lib.dataverse.model.file.prestaged.PrestagedFile;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "basic_file_meta")
 public class BasicFileMeta {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String label;
     private String directoryLabel;
     private int versionSequenceNumber;
-    private PrestagedFile prestagedFile;
+//    private PrestagedFile prestagedFile;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getLabel() {
         return label;
@@ -47,11 +63,11 @@ public class BasicFileMeta {
         this.versionSequenceNumber = versionSequenceNumber;
     }
 
-    public PrestagedFile getPrestagedFile() {
-        return prestagedFile;
-    }
-
-    public void setPrestagedFile(PrestagedFile prestagedFile) {
-        this.prestagedFile = prestagedFile;
-    }
+//    public PrestagedFile getPrestagedFile() {
+//        return prestagedFile;
+//    }
+//
+//    public void setPrestagedFile(PrestagedFile prestagedFile) {
+//        this.prestagedFile = prestagedFile;
+//    }
 }

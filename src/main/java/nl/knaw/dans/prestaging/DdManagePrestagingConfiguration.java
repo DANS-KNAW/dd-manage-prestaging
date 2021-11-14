@@ -18,15 +18,21 @@ package nl.knaw.dans.prestaging;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.dropwizard.db.DataSourceFactory;
 import nl.knaw.dans.lib.util.DataverseClientFactory;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class DdManagePrestagingConfiguration extends Configuration {
 
+    // May be null, if not loading, but serving records to easy-convert-bag-to-deposit
     @Valid
     private DataverseClientFactory dataverse;
+
+    @Valid
+    @NotNull
+    private DataSourceFactory database = new DataSourceFactory();
 
     public DataverseClientFactory getDataverse() {
         return dataverse;
@@ -35,4 +41,15 @@ public class DdManagePrestagingConfiguration extends Configuration {
     public void setDataverse(DataverseClientFactory dataverse) {
         this.dataverse = dataverse;
     }
+
+
+    public DataSourceFactory getDatabase() {
+        return database;
+    }
+
+
+    public void setDatabase(DataSourceFactory dataSourceFactory) {
+        this.database = dataSourceFactory;
+    }
+
 }

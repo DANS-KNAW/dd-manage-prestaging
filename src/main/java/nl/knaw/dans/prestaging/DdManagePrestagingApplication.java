@@ -17,11 +17,22 @@
 package nl.knaw.dans.prestaging;
 
 import io.dropwizard.Application;
+import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import nl.knaw.dans.lib.dataverse.DataverseClient;
+import nl.knaw.dans.prestaging.cli.LoadFromDataverseCommand;
+import nl.knaw.dans.prestaging.core.BasicFileMeta;
 
 public class DdManagePrestagingApplication extends Application<DdManagePrestagingConfiguration> {
+    private final HibernateBundle<DdManagePrestagingConfiguration> hibernate = new HibernateBundle<DdManagePrestagingConfiguration>(BasicFileMeta.class) {
+
+        @Override
+        public DataSourceFactory getDataSourceFactory(DdManagePrestagingConfiguration configuration) {
+            return configuration.getDatabase();
+        }
+    };
 
     public static void main(final String[] args) throws Exception {
         new DdManagePrestagingApplication().run(args);
@@ -29,17 +40,18 @@ public class DdManagePrestagingApplication extends Application<DdManagePrestagin
 
     @Override
     public String getName() {
-        return "Dd Manage Prestaging";
+        return "Manage Prestaging";
     }
 
     @Override
     public void initialize(final Bootstrap<DdManagePrestagingConfiguration> bootstrap) {
-        // TODO: application initialization
+        bootstrap.addBundle(hibernate);
+        bootstrap.addCommand(new LoadFromDataverseCommand(this, hibernate));
     }
 
     @Override
     public void run(final DdManagePrestagingConfiguration configuration, final Environment environment) {
         DataverseClient client = configuration.getDataverse().build();
-    }
 
+    }
 }

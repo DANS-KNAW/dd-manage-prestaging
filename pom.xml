@@ -45,7 +45,11 @@
     </scm>
 
     <dependencies>
-        <!-- Add project-specific dependencies here -->
+        <dependency>
+            <groupId>nl.knaw.dans</groupId>
+            <artifactId>dans-dataverse-client-lib</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <repositories>

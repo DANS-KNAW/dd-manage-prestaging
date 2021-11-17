@@ -26,6 +26,7 @@ import net.sourceforge.argparse4j.inf.Subparser;
 import nl.knaw.dans.lib.dataverse.DataverseClient;
 import nl.knaw.dans.prestaging.DdManagePrestagingConfiguration;
 import nl.knaw.dans.prestaging.core.BasicFileMetaLoader;
+import nl.knaw.dans.prestaging.core.DoiIterator;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
 
 public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
@@ -57,6 +58,12 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
                 BasicFileMetaLoader.class,
                 new Class[]{BasicFileMetaDAO.class, DataverseClient.class},
                 new Object[]{dao, client});
-        proxy.loadFromDataset(namespace.getString("doi"));
+        String doi = namespace.getString("doi");
+        if (doi == null) {
+            proxy.loadFromDatasets(new DoiIterator(client));
+        } else {
+            proxy.loadFromDataset(doi);
+        }
+
     }
 }

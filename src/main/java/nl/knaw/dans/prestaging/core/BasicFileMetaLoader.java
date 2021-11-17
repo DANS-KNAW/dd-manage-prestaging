@@ -26,7 +26,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
 
 public class BasicFileMetaLoader {
     private static final Logger log = LoggerFactory.getLogger(BasicFileMetaLoader.class);
@@ -39,16 +43,21 @@ public class BasicFileMetaLoader {
         this.dataverseClient = dataverseClient;
     }
 
+    public void loadFromDatasets(Iterator<String> dois) {
+        Spliterator<String> spliterator = Spliterators.spliteratorUnknownSize(dois, Spliterator.ORDERED);
+        StreamSupport.stream(spliterator, false).forEach(this::loadFromDataset);
+    }
+
     public void loadFromDataset(String doi) {
         log.trace("ENTER");
         try {
             DataverseResponse<List<DatasetVersion>> r = dataverseClient.dataset(doi).getAllVersions();
             List<DatasetVersion> versions = r.getData();
             versions.sort(new DatasetVersionComparator());
-            int i = 0;
+            int seqNum = 1;
             for (DatasetVersion v : versions) {
-                loadFromDatasetVersion(doi, v, i);
-                ++i;
+                loadFromDatasetVersion(doi, v, seqNum);
+                ++seqNum;
                 log.info("Stored basic file metas for DOI: {}", doi);
             }
         } catch (IOException | DataverseException e) {

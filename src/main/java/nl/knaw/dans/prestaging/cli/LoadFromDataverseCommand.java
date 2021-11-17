@@ -17,38 +17,32 @@ package nl.knaw.dans.prestaging.cli;
 
 import io.dropwizard.Application;
 import io.dropwizard.cli.EnvironmentCommand;
-import io.dropwizard.db.ManagedDataSource;
-import io.dropwizard.db.ManagedPooledDataSource;
 import io.dropwizard.hibernate.HibernateBundle;
-import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Environment;
 import net.sourceforge.argparse4j.inf.Namespace;
-import nl.knaw.dans.lib.dataverse.DataverseClient;
 import nl.knaw.dans.prestaging.DdManagePrestagingConfiguration;
-import nl.knaw.dans.prestaging.core.BasicFileMeta;
 import nl.knaw.dans.prestaging.core.Worker;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
 
-import java.util.List;
-
 public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
-    private HibernateBundle<DdManagePrestagingConfiguration> hibernate;
+    private final HibernateBundle<DdManagePrestagingConfiguration> hibernate;
 
     public LoadFromDataverseCommand(Application<DdManagePrestagingConfiguration> application, HibernateBundle<DdManagePrestagingConfiguration> hibernate) {
         super(application, "load-from-dataverse", "Loads basic file metas from the configured Dataverse instance");
         this.hibernate = hibernate;
     }
 
+    // TODO: add argument: --all, --doi <doi>
+
     @Override
     protected void run(Environment environment, Namespace namespace, DdManagePrestagingConfiguration configuration) throws Exception {
         BasicFileMetaDAO dao = new BasicFileMetaDAO(hibernate.getSessionFactory());
+        // https://stackoverflow.com/questions/42384671/dropwizard-hibernate-no-session-currently-bound-to-execution-context
         Worker proxy = new UnitOfWorkAwareProxyFactory(hibernate).create(Worker.class, BasicFileMetaDAO.class, dao);
-        proxy.loadBasicFileMetas();
+//        proxy.loadBasicFileMetasFor();
 
     }
-
-
 
 
 }

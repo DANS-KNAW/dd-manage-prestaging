@@ -15,44 +15,51 @@
  */
 package nl.knaw.dans.prestaging.core;
 
-import nl.knaw.dans.lib.dataverse.model.file.prestaged.PrestagedFile;
-
 import javax.persistence.*;
 
 @Entity
+@IdClass(BasicFileMetaKey.class)
 @Table(name = "basic_file_meta")
 public class BasicFileMeta {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String label;
-    private String directoryLabel;
+    @Column(name = "storage_identifier", nullable = false, length = 60)
+    private String storageIdentifier;
+
+    @Id
+    @Column(name = "dataset_doi", nullable = false, length = 100)
+    private String datasetDoi;
+
+    @Id
+    @Column(name = "version_sequence_number", nullable = false)
     private int versionSequenceNumber;
-//    private PrestagedFile prestagedFile;
 
+    @Column(name = "file_name", nullable = false, length = 1000)
+    private String fileName;
 
-    public int getId() {
-        return id;
+    @Column(name = "directory_label", nullable = true, length = 1000)
+    private String directoryLabel;
+
+    @Column(name = "mime_type", nullable = false, length = 255)
+    private String mimeType;
+
+    @Column(name = "sha1_checksum", nullable = false, length = 40)
+    private String sha1Checksum;
+
+    public String getStorageIdentifier() {
+        return storageIdentifier;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStorageIdentifier(String storageIdentifier) {
+        this.storageIdentifier = storageIdentifier;
     }
 
-    public String getLabel() {
-        return label;
+    public String getDatasetDoi() {
+        return datasetDoi;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getDirectoryLabel() {
-        return directoryLabel;
-    }
-
-    public void setDirectoryLabel(String directoryLabel) {
-        this.directoryLabel = directoryLabel;
+    public void setDatasetDoi(String datasetDoi) {
+        this.datasetDoi = datasetDoi;
     }
 
     public int getVersionSequenceNumber() {
@@ -63,11 +70,35 @@ public class BasicFileMeta {
         this.versionSequenceNumber = versionSequenceNumber;
     }
 
-//    public PrestagedFile getPrestagedFile() {
-//        return prestagedFile;
-//    }
-//
-//    public void setPrestagedFile(PrestagedFile prestagedFile) {
-//        this.prestagedFile = prestagedFile;
-//    }
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getDirectoryLabel() {
+        return directoryLabel;
+    }
+
+    public void setDirectoryLabel(String directoryLabel) {
+        this.directoryLabel = directoryLabel;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public String getSha1Checksum() {
+        return sha1Checksum;
+    }
+
+    public void setSha1Checksum(String sha1Checksum) {
+        this.sha1Checksum = sha1Checksum;
+    }
 }

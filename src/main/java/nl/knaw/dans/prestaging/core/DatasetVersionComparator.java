@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.prestaging.db;
+package nl.knaw.dans.prestaging.core;
 
-import io.dropwizard.hibernate.AbstractDAO;
-import nl.knaw.dans.prestaging.core.BasicFileMeta;
-import org.hibernate.SessionFactory;
+import nl.knaw.dans.lib.dataverse.model.dataset.DatasetVersion;
 
-public class BasicFileMetaDAO extends AbstractDAO<BasicFileMeta> {
+import java.util.Comparator;
 
-    public BasicFileMetaDAO(SessionFactory sessionFactory) {
-        super(sessionFactory);
-    }
-
-    public BasicFileMeta create(BasicFileMeta basicFileMeta) {
-        currentSession().save(basicFileMeta);
-        return basicFileMeta;
+public class DatasetVersionComparator implements Comparator<DatasetVersion> {
+    @Override
+    public int compare(DatasetVersion v1, DatasetVersion v2) {
+        int major = Integer.compare(v1.getVersionNumber(), v2.getVersionNumber());
+        if (major != 0) return major;
+        else return Integer.compare(v1.getVersionMinorNumber(), v2.getVersionMinorNumber());
     }
 }

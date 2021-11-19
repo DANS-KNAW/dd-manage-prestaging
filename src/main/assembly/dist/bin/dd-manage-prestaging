@@ -3,5 +3,14 @@
 SCRIPTNAME=$(basename $0)
 BINPATH=$(command readlink -f $0 2> /dev/null || command grealpath $0 2> /dev/null)
 APPHOME=$(dirname  $(dirname $BINPATH))
+CONFIG_PATH=/etc/opt/dans.knaw.nl/$SCRIPTNAME/config.yml
 
-java -jar $APPHOME/bin/$SCRIPTNAME.jar "$@"
+# If last_arg arg is config.yml, use that instead of the one in etc
+# See: https://stackoverflow.com/a/1853993
+for last_arg; do true; done
+if [[ $(basename $last_arg) == config.yml ]]; then
+ echo "$last_arg"
+ CONFIG_PATH=""
+fi
+
+java -jar $APPHOME/bin/$SCRIPTNAME.jar "$@" $CONFIG_PATH

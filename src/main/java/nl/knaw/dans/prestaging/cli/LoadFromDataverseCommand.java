@@ -28,8 +28,11 @@ import nl.knaw.dans.prestaging.DdManagePrestagingConfiguration;
 import nl.knaw.dans.prestaging.core.BasicFileMetaLoader;
 import nl.knaw.dans.prestaging.core.DoiIterator;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
+    private static final Logger log = LoggerFactory.getLogger(LoadFromDataverseCommand.class);
     private final HibernateBundle<DdManagePrestagingConfiguration> hibernate;
 
     public LoadFromDataverseCommand(Application<DdManagePrestagingConfiguration> application, HibernateBundle<DdManagePrestagingConfiguration> hibernate) {
@@ -51,6 +54,7 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
 
     @Override
     protected void run(Environment environment, Namespace namespace, DdManagePrestagingConfiguration configuration) {
+        log.trace("ENTER");
         BasicFileMetaDAO dao = new BasicFileMetaDAO(hibernate.getSessionFactory());
         DataverseClient client = configuration.getDataverse().build();
         // https://stackoverflow.com/questions/42384671/dropwizard-hibernate-no-session-currently-bound-to-execution-context

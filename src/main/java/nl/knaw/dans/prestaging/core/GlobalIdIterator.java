@@ -28,13 +28,18 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
-public class DoiIterator implements Iterator<String> {
+/**
+ * Iterator that returns Global IDs of datasets matching a search query.
+ */
+public class GlobalIdIterator implements Iterator<String> {
     private final DataverseClient dataverseClient;
+    private final String query;
     private int start = 0;
     private Iterator<String> currentBatch = Collections.emptyIterator();
 
-    public DoiIterator(DataverseClient dataverseClient) {
+    public GlobalIdIterator(DataverseClient dataverseClient, String query) {
         this.dataverseClient = dataverseClient;
+        this.query = query;
     }
 
     @Override
@@ -57,7 +62,7 @@ public class DoiIterator implements Iterator<String> {
             SearchOptions options = new SearchOptions();
             options.setStart(start);
             options.setTypes(Collections.singletonList(SearchItemType.dataset));
-            DataverseResponse<SearchResult> r = dataverseClient.search().find("publicationStatus:\"Published\"", options);
+            DataverseResponse<SearchResult> r = dataverseClient.search().find(query, options);
             return r.getData()
                     .getItems()
                     .stream()
@@ -65,7 +70,7 @@ public class DoiIterator implements Iterator<String> {
                     .collect(Collectors.toList())
                     .iterator();
         } catch (IOException | DataverseException e) {
-            throw new IllegalStateException("Cannot retrieve next batch of DOIs", e);
+            throw new IllegalStateException("Cannot retrieve next batch of datasets", e);
         }
     }
 }

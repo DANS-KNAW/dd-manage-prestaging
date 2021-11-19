@@ -59,8 +59,8 @@ public class BasicFileMetaLoader {
             int seqNum = 1;
             for (DatasetVersion v : versions) {
                 loadFromDatasetVersion(doi, v, seqNum);
+                log.info("Stored {} basic file metas for DOI {}, Version seqNr {}", v.getFiles().size(), doi, seqNum);
                 ++seqNum;
-                log.info("Stored basic file metas for DOI: {}", doi);
             }
         } catch (IOException | DataverseException e) {
             log.error("Could not retrieve or store basic file metas for DOI: {}", doi, e);
@@ -80,6 +80,7 @@ public class BasicFileMetaLoader {
             basicFileMeta.setMimeType(f.getDataFile().getContentType());
             basicFileMeta.setSha1Checksum(f.getDataFile().getChecksum().getValue());
             dao.create(basicFileMeta);
+            log.debug("Stored file, label: {}, directoryLabel: {}", basicFileMeta.getFileName(), basicFileMeta.getDirectoryLabel());
         }
     }
 }

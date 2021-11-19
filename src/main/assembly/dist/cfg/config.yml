@@ -30,6 +30,15 @@ logging:
       additive: false
   appenders:
     - type: console
+      logFormat: "%m%n%rEx"
+
+    - type: file
+      currentLogFilename: /var/opt/nl.knaw.dans/dd-manage-prestaging/dd-manage-prestaging.log
+      archive: true
+      archivedLogFilenamePattern: /var/opt/nl.knaw.dans/dd-manage-prestaging/dd-manage-prestaging-%d.log
+      archivedFileCount: 5
       logFormat: "%-5p [%d{ISO8601}] [%t] %c: %m%n%rEx"
-  # TODO: file appender
+
+
+
   # TODO: logFormat especially for trace logging

@@ -25,7 +25,7 @@ import net.sourceforge.argparse4j.inf.Subparser;
 import nl.knaw.dans.lib.dataverse.DataverseClient;
 import nl.knaw.dans.prestaging.DdManagePrestagingConfiguration;
 import nl.knaw.dans.prestaging.core.BasicFileMetaLoader;
-import nl.knaw.dans.prestaging.core.DoiIterator;
+import nl.knaw.dans.prestaging.core.GlobalIdIterator;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
                 new Object[]{dao, client});
         String doi = namespace.getString("doi");
         if (doi == null) {
-            loaderProxy.loadFromDatasets(new DoiIterator(client));
+            loaderProxy.loadFromDatasets(new GlobalIdIterator(client, "publicationStatus:\"Published\""));
         } else {
             loaderProxy.loadFromDataset(doi);
         }

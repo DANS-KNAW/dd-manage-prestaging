@@ -19,14 +19,30 @@ import io.dropwizard.hibernate.AbstractDAO;
 import nl.knaw.dans.prestaging.core.BasicFileMeta;
 import org.hibernate.SessionFactory;
 
+import java.util.List;
+
 public class BasicFileMetaDAO extends AbstractDAO<BasicFileMeta> {
 
     public BasicFileMetaDAO(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
 
+    /**
+     * Creates a new {@link BasicFileMeta} record. If one with the same key already exists an exception is thrown.
+     *
+     * @param basicFileMeta the object to create
+     * @return the object that was created
+     */
     public BasicFileMeta create(BasicFileMeta basicFileMeta) {
         currentSession().save(basicFileMeta);
         return basicFileMeta;
     }
+
+    public List<BasicFileMeta> findByDoiAndSeqNr(String doi, int seqNr) {
+        return namedTypedQuery("BasicFileMetaKey.findByDoiAndSeqNr")
+                .setParameter("doi", doi)
+                .setParameter("seqNr", seqNr)
+                .getResultList();
+    }
+
 }

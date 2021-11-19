@@ -20,6 +20,11 @@ import javax.persistence.*;
 @Entity
 @IdClass(BasicFileMetaKey.class)
 @Table(name = "basic_file_meta")
+@NamedQueries({
+        @NamedQuery(name = "BasicFileMetaKey.findByDoiAndSeqNr",
+                query = "SELECT b FROM BasicFileMeta b WHERE b.datasetDoi=:doi AND b.versionSequenceNumber=:seqNr"),
+
+})
 public class BasicFileMeta {
 
     @Id

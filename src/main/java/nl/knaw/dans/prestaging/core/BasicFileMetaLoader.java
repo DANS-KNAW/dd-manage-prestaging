@@ -39,11 +39,13 @@ public class BasicFileMetaLoader {
     private final DataverseClient dataverseClient;
 
     public BasicFileMetaLoader(BasicFileMetaDAO dao, DataverseClient dataverseClient) {
+        log.trace("ENTER");
         this.dao = dao;
         this.dataverseClient = dataverseClient;
     }
 
     public void loadFromDatasets(Iterator<String> dois) {
+        log.trace("ENTER");
         Spliterator<String> spliterator = Spliterators.spliteratorUnknownSize(dois, Spliterator.ORDERED);
         StreamSupport.stream(spliterator, false).forEach(this::loadFromDataset);
     }
@@ -67,6 +69,7 @@ public class BasicFileMetaLoader {
 
     @UnitOfWork
     public void loadFromDatasetVersion(String doi, DatasetVersion v, int seqNum) {
+        log.trace("ENTER");
         for (FileMeta f : v.getFiles()) {
             BasicFileMeta basicFileMeta = new BasicFileMeta();
             basicFileMeta.setDatasetDoi(doi);

@@ -3,12 +3,10 @@ server:
   adminContextPath: /
   applicationConnectors:
     - type: http
-      # Replace with port number unique for this service
-      port: 20000
+      port: 20230
   adminConnectors:
     - type: http
-      # Replace with port number unique for this service
-      port: 20001
+      port: 20231
 
 database:
   driverClass: org.postgresql.Driver
@@ -24,13 +22,14 @@ dataverse:
   baseUrl: 'http://localhost:8080/'
   apiKey: changeme
 
-
 logging:
   level: WARN
   loggers:
-    "dans.knaw.nl":
+    nl.knaw.dans:
       level: INFO
       additive: false
   appenders:
     - type: console
       logFormat: "%-5p [%d{ISO8601}] [%t] %c: %m%n%rEx"
+  # TODO: file appender
+  # TODO: logFormat especially for trace logging

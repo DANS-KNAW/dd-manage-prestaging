@@ -21,11 +21,16 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import nl.knaw.dans.lib.dataverse.DataverseClient;
 import nl.knaw.dans.prestaging.cli.LoadFromDataverseCommand;
 import nl.knaw.dans.prestaging.core.BasicFileMeta;
+import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
+import nl.knaw.dans.prestaging.resources.DatasetsResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DdManagePrestagingApplication extends Application<DdManagePrestagingConfiguration> {
+    private static final Logger log = LoggerFactory.getLogger(DdManagePrestagingApplication.class);
+
     private final HibernateBundle<DdManagePrestagingConfiguration> hibernate = new HibernateBundle<DdManagePrestagingConfiguration>(BasicFileMeta.class) {
 
         @Override
@@ -51,7 +56,8 @@ public class DdManagePrestagingApplication extends Application<DdManagePrestagin
 
     @Override
     public void run(final DdManagePrestagingConfiguration configuration, final Environment environment) {
-        DataverseClient client = configuration.getDataverse().build();
-
+        log.trace("ENTER");
+        BasicFileMetaDAO dao = new BasicFileMetaDAO(hibernate.getSessionFactory());
+        environment.jersey().register(new DatasetsResource(dao));
     }
 }

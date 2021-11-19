@@ -16,12 +16,13 @@
 package nl.knaw.dans.prestaging.resources;
 
 import io.dropwizard.hibernate.UnitOfWork;
-import nl.knaw.dans.prestaging.core.BasicFileMeta;
+import nl.knaw.dans.prestaging.api.BasicFileMeta;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/datasets")
 @Produces(MediaType.APPLICATION_JSON)
@@ -36,13 +37,11 @@ public class DatasetsResource {
     @Path("/{id}/seq/{seqNr}/basic-file-metas")
     @UnitOfWork
     public List<BasicFileMeta> getBasicFileMetasForDoi(@PathParam("id") String id, @PathParam("seqNr") int seqNr, @QueryParam("persistentId") String persistentId) {
-        String doi = null;
         if (":persistentId".equals(id)) {
-            doi = persistentId;
+            return basicFileMetaDAO.findByDoiAndSeqNr(persistentId, seqNr)
+                    .stream().map(BasicFileMeta::new).collect(Collectors.toList());
         } else {
             throw new IllegalArgumentException("Database IDs not supported");
         }
-
-        return basicFileMetaDAO.findByDoiAndSeqNr(doi, seqNr);
     }
 }

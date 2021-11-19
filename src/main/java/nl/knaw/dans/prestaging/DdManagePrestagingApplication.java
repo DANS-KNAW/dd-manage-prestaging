@@ -16,13 +16,14 @@
 
 package nl.knaw.dans.prestaging;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import nl.knaw.dans.prestaging.cli.LoadFromDataverseCommand;
-import nl.knaw.dans.prestaging.core.BasicFileMeta;
+import nl.knaw.dans.prestaging.core.BasicFileMetaEntity;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
 import nl.knaw.dans.prestaging.resources.DatasetsResource;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class DdManagePrestagingApplication extends Application<DdManagePrestagingConfiguration> {
     private static final Logger log = LoggerFactory.getLogger(DdManagePrestagingApplication.class);
 
-    private final HibernateBundle<DdManagePrestagingConfiguration> hibernate = new HibernateBundle<DdManagePrestagingConfiguration>(BasicFileMeta.class) {
+    private final HibernateBundle<DdManagePrestagingConfiguration> hibernate = new HibernateBundle<DdManagePrestagingConfiguration>(BasicFileMetaEntity.class) {
 
         @Override
         public DataSourceFactory getDataSourceFactory(DdManagePrestagingConfiguration configuration) {
@@ -52,6 +53,7 @@ public class DdManagePrestagingApplication extends Application<DdManagePrestagin
     public void initialize(final Bootstrap<DdManagePrestagingConfiguration> bootstrap) {
         bootstrap.addBundle(hibernate);
         bootstrap.addCommand(new LoadFromDataverseCommand(this, hibernate));
+        bootstrap.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @Override

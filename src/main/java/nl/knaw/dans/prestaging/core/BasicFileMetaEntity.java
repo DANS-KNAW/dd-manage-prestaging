@@ -22,10 +22,10 @@ import javax.persistence.*;
 @Table(name = "basic_file_meta")
 @NamedQueries({
         @NamedQuery(name = "BasicFileMetaKey.findByDoiAndSeqNr",
-                query = "SELECT b FROM BasicFileMeta b WHERE b.datasetDoi=:doi AND b.versionSequenceNumber=:seqNr"),
+                query = "SELECT b FROM BasicFileMetaEntity b WHERE b.datasetDoi=:doi AND b.versionSequenceNumber=:seqNr"),
 
 })
-public class BasicFileMeta {
+public class BasicFileMetaEntity {
 
     @Id
     @Column(name = "storage_identifier", nullable = false, length = 60)

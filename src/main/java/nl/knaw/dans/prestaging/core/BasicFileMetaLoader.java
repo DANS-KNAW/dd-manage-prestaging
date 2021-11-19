@@ -71,7 +71,7 @@ public class BasicFileMetaLoader {
     public void loadFromDatasetVersion(String doi, DatasetVersion v, int seqNum) {
         log.trace("ENTER");
         for (FileMeta f : v.getFiles()) {
-            BasicFileMeta basicFileMeta = new BasicFileMeta();
+            BasicFileMetaEntity basicFileMeta = new BasicFileMetaEntity();
             basicFileMeta.setDatasetDoi(doi);
             basicFileMeta.setStorageIdentifier(f.getDataFile().getStorageIdentifier());
             basicFileMeta.setVersionSequenceNumber(seqNum);

@@ -15,13 +15,37 @@
  */
 package nl.knaw.dans.prestaging.api;
 
+import nl.knaw.dans.lib.dataverse.model.file.prestaged.Checksum;
 import nl.knaw.dans.lib.dataverse.model.file.prestaged.PrestagedFile;
+import nl.knaw.dans.prestaging.core.BasicFileMetaEntity;
+
+import java.util.Collections;
 
 public class BasicFileMeta {
     private String label;
     private String directoryLabel;
     private int versionSequenceNumber;
     private PrestagedFile prestagedFile;
+
+    public BasicFileMeta() {
+    }
+
+    public BasicFileMeta(BasicFileMetaEntity bfm) {
+        label = bfm.getFileName();
+        directoryLabel = bfm.getDirectoryLabel();
+        versionSequenceNumber = bfm.getVersionSequenceNumber();
+        prestagedFile = new PrestagedFile();
+        prestagedFile.setFileName(bfm.getFileName());
+        prestagedFile.setDirectoryLabel(bfm.getDirectoryLabel());
+        prestagedFile.setChecksum(new Checksum(
+                "SHA-1",
+                bfm.getSha1Checksum()
+        ));
+        prestagedFile.setMimeType(bfm.getMimeType());
+        prestagedFile.setStorageIdentifier(bfm.getStorageIdentifier());
+        prestagedFile.setCategories(Collections.emptyList());
+    }
+
 
     public String getLabel() {
         return label;

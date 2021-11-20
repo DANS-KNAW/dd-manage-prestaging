@@ -5,6 +5,7 @@ Description=${project.name} Service
 ExecStart=/opt/dans.knaw.nl/dd-manage-prestaging/bin/dd-manage-prestaging server /etc/opt/dans.knaw.nl/dd-manage-prestaging/config.yml
 # Java returns 143 even if the SIGTERM was handled correctly.
 SuccessExitStatus=143
+Environment="DD_MANAGE_PRESTAGING_LOGDIR=/var/opt/dans.knaw.nl/log/dd-manage-prestaging"
 
 User=dd-manage-prestaging
 Group=dd-manage-prestaging

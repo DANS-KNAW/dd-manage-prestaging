@@ -18,6 +18,8 @@ package nl.knaw.dans.prestaging;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.dropwizard.Application;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -54,6 +56,8 @@ public class DdManagePrestagingApplication extends Application<DdManagePrestagin
         bootstrap.addBundle(hibernate);
         bootstrap.addCommand(new LoadFromDataverseCommand(this, hibernate));
         bootstrap.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        bootstrap.setConfigurationSourceProvider(new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
+                new EnvironmentVariableSubstitutor(false)));
     }
 
     @Override

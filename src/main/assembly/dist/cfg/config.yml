@@ -33,9 +33,9 @@ logging:
       logFormat: "%m%n%rEx"
 
     - type: file
-      currentLogFilename: /var/opt/nl.knaw.dans/dd-manage-prestaging/dd-manage-prestaging.log
+      currentLogFilename: ${DD_MANAGE_PRESTAGING_LOGDIR:-.}/dd-manage-prestaging.log
       archive: true
-      archivedLogFilenamePattern: /var/opt/nl.knaw.dans/dd-manage-prestaging/dd-manage-prestaging-%d.log
+      archivedLogFilenamePattern: ${DD_MANAGE_PRESTAGING_LOGDIR:-.}/dd-manage-prestaging-%d.log
       archivedFileCount: 5
       logFormat: "%-5p [%d{ISO8601}] [%t] %c: %m%n%rEx"
 

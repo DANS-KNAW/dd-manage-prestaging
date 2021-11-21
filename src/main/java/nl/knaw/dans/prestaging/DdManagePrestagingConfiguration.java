@@ -16,10 +16,10 @@
 
 package nl.knaw.dans.prestaging;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 import nl.knaw.dans.lib.util.DataverseClientFactory;
+import nl.knaw.dans.prestaging.core.Storage;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -34,8 +34,8 @@ public class DdManagePrestagingConfiguration extends Configuration {
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
 
+    private Storage storage;
 
-    private String storageBaseDir;
 
     public DataverseClientFactory getDataverse() {
         return dataverse;
@@ -55,11 +55,12 @@ public class DdManagePrestagingConfiguration extends Configuration {
         this.database = dataSourceFactory;
     }
 
-    public String getStorageBaseDir() {
-        return storageBaseDir;
+
+    public Storage getStorage() {
+        return storage;
     }
 
-    public void setStorageBaseDir(String storageBaseDir) {
-        this.storageBaseDir = storageBaseDir;
+    public void setStorage(Storage storage) {
+        this.storage = storage;
     }
 }

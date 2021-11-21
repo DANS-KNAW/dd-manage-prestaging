@@ -22,7 +22,10 @@ dataverse:
   baseUrl: 'http://localhost:8080/'
   apiKey: changeme
 
-storageBaseDir: '/data/dataverse'
+storage:
+  namespaces:
+    - dir: '/data/dataverse/files/10.5072'
+  # - shoulder:
 
 logging:
   level: WARN

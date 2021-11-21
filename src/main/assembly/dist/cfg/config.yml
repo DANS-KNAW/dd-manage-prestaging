@@ -3,10 +3,10 @@ server:
   adminContextPath: /
   applicationConnectors:
     - type: http
-      port: 20230
+      port: 20235
   adminConnectors:
     - type: http
-      port: 20231
+      port: 20236
 
 database:
   driverClass: org.postgresql.Driver
@@ -42,7 +42,3 @@ logging:
       archivedLogFilenamePattern: ${DD_MANAGE_PRESTAGING_LOGDIR:-.}/dd-manage-prestaging-%d.log
       archivedFileCount: 5
       logFormat: "%-5p [%d{ISO8601}] [%t] %c: %m%n%rEx"
-
-
-
-  # TODO: logFormat especially for trace logging

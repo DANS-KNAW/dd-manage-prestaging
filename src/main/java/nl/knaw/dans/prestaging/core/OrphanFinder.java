@@ -32,40 +32,36 @@ public class OrphanFinder {
     private static final Logger log = LoggerFactory.getLogger(OrphanFinder.class);
     private static final Pattern storedFilePattern = Pattern.compile("^\\d+-\\d+$");
 
-    private final List<StorageNamespace> storageDirs;
+    private final List<StorageNamespace> storageNamespaces;
     private final CapturedStorageIdentifiers capturedStorageIdentifiers;
     private final OrphanRegister orphanRegister;
 
-    public OrphanFinder(List<StorageNamespace> storageDirs, CapturedStorageIdentifiers capturedStorageIdentifiers, OrphanRegister orphanRegister) {
-        this.storageDirs = storageDirs;
+    public OrphanFinder(List<StorageNamespace> storageNamespaces, CapturedStorageIdentifiers capturedStorageIdentifiers, OrphanRegister orphanRegister) {
+        this.storageNamespaces = storageNamespaces;
         this.capturedStorageIdentifiers = capturedStorageIdentifiers;
         this.orphanRegister = orphanRegister;
     }
 
     public void searchStorageDirs() throws IOException {
-        for (StorageNamespace storageDir : storageDirs) {
-            searchStorageDir(storageDir);
+        for (StorageNamespace storageNamespace : storageNamespaces) {
+            searchStorageNamespace(storageNamespace);
         }
     }
 
-    public void searchStorageDir(StorageNamespace namespace) throws IOException {
+    public void searchStorageNamespace(StorageNamespace namespace) throws IOException {
         log.info("START: STORAGE DIR {}", namespace);
         Path nameSpaceDir = namespace.getDir().resolve(Optional.ofNullable(namespace.getShoulder()).orElse(""));
         List<Path> subDirs = Files.list(nameSpaceDir).filter(Files::isDirectory).collect(Collectors.toList());
         for (Path subDir : subDirs) {
-            searchDatasetStorageDir(subDir);
+            searchDatasetStorageDir(subDir, getDoi(namespace, subDir));
         }
         log.info("END: STORAGE DIR {}", namespace);
     }
 
-    void searchDatasetStorageDir(Path doiDir) throws IOException {
+    void searchDatasetStorageDir(Path doiDir, String doi) throws IOException {
         log.info("Inspecting {}", doiDir);
 
-        log.debug("Getting DOI from directory name");
-        // TODO: implement
-        String doi = null;
-
-        log.debug("Getting expected storage identifiers");
+        log.debug("Getting expected storage identifiers for DOI {}", doi);
         Set<String> expected = new HashSet<>(capturedStorageIdentifiers.getForDoi(doi));
 
         log.debug("Getting storage identifiers found on disk");
@@ -75,10 +71,19 @@ public class OrphanFinder {
         List<Path> unexpected = found.stream()
                 .filter(f -> !expected.contains("file://" + f.getFileName().toString()))
                 .collect(Collectors.toList());
-        unexpected.forEach(orphanRegister::register);
+        for (Path path : unexpected) {
+            orphanRegister.register(path);
+        }
 
         if (unexpected.isEmpty()) log.info("Directory OK");
         else log.error("Orphans found. NOT OK.");
+    }
+
+    private String getDoi(StorageNamespace namespace, Path doiDir) {
+        return "doi:"
+                + namespace.getDir().getFileName() + "/"
+                + Optional.ofNullable(namespace.getShoulder()).map(s -> s + "/").orElse("")
+                + doiDir.getFileName();
     }
 
     private List<Path> getStoredFilesOnDisk(Path dir) throws IOException {

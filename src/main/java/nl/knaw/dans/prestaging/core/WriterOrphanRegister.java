@@ -15,17 +15,19 @@
  */
 package nl.knaw.dans.prestaging.core;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Path;
 
-public class CaptureStorageIdentifiersImpl implements CapturedStorageIdentifiers {
-    private final List<String> identifiers;
+public class WriterOrphanRegister implements OrphanRegister {
+    private final Writer writer;
 
-    CaptureStorageIdentifiersImpl(List<String> identifiers) {
-        this.identifiers = identifiers;
+    public WriterOrphanRegister(Writer writer) {
+        this.writer = writer;
     }
 
     @Override
-    public List<String> getForDoi(String doi) {
-        return identifiers;
+    public void register(Path orphanedFile) throws IOException {
+        writer.write(orphanedFile.toString());
     }
 }

@@ -15,16 +15,19 @@
  */
 package nl.knaw.dans.prestaging.core;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public interface OrphanRegister {
+public class CapturedStorageIdentifiersImpl implements CapturedStorageIdentifiers {
+    private final Map<String, List<String>> capturedStorageIds = new HashMap<>();
 
-    /**
-     * Registers an orphaned file
-     *
-     * @param orphanedFile the full path of the file to register
-     */
-    void register(Path orphanedFile) throws IOException;
+    public void setForDoi(String doi, List<String> ids) {
+        capturedStorageIds.put(doi, ids);
+    }
 
+    @Override
+    public List<String> getForDoi(String doi) {
+        return capturedStorageIds.get(doi);
+    }
 }

@@ -18,11 +18,21 @@ package nl.knaw.dans.prestaging.cli;
 import io.dropwizard.Application;
 import io.dropwizard.cli.EnvironmentCommand;
 import io.dropwizard.hibernate.HibernateBundle;
+import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Environment;
 import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.inf.Subparser;
 import nl.knaw.dans.prestaging.DdManagePrestagingConfiguration;
+import nl.knaw.dans.prestaging.core.*;
+import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 public class FindOrphanedCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
     private static final Logger log = LoggerFactory.getLogger(FindOrphanedCommand.class);
@@ -33,9 +43,25 @@ public class FindOrphanedCommand extends EnvironmentCommand<DdManagePrestagingCo
         this.hibernate = hibernate;
     }
 
+    @Override
+    public void configure(Subparser subparser) {
+        super.configure(subparser);
+        subparser.addArgument("-o", "--output-file")
+                .required(true)
+                .dest("outputFile")
+                .help("The file to write the orphan paths to");
+    }
 
     @Override
     protected void run(Environment environment, Namespace namespace, DdManagePrestagingConfiguration configuration) throws Exception {
-
+        log.trace("ENTER");
+        BasicFileMetaDAO dao = new BasicFileMetaDAO(hibernate.getSessionFactory());
+        Path outputFile = Paths.get(namespace.getString("ouputFile"));
+        OrphanRegister register = new WriterOrphanRegister(new FileWriterWithEncoding(outputFile.toFile(), StandardCharsets.UTF_8));
+        OrphanFinder finderProxy = new UnitOfWorkAwareProxyFactory(hibernate).create(
+                OrphanFinder.class,
+                new Class[]{List.class, CapturedStorageIdentifiers.class, OrphanRegister.class},
+                new Object[]{configuration.getStorage().getNamespaces(), new CapturedStorageIdentifiersInDatabase(dao), register});
+        finderProxy.searchStorageDirs();
     }
 }

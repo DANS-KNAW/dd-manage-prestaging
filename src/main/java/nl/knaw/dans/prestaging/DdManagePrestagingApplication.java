@@ -24,6 +24,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import nl.knaw.dans.prestaging.cli.FindOrphanedCommand;
 import nl.knaw.dans.prestaging.cli.LoadFromDataverseCommand;
 import nl.knaw.dans.prestaging.core.BasicFileMetaEntity;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
@@ -55,6 +56,7 @@ public class DdManagePrestagingApplication extends Application<DdManagePrestagin
     public void initialize(final Bootstrap<DdManagePrestagingConfiguration> bootstrap) {
         bootstrap.addBundle(hibernate);
         bootstrap.addCommand(new LoadFromDataverseCommand(this, hibernate));
+        bootstrap.addCommand(new FindOrphanedCommand(this, hibernate));
         bootstrap.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         bootstrap.setConfigurationSourceProvider(new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
                 new EnvironmentVariableSubstitutor(false)));

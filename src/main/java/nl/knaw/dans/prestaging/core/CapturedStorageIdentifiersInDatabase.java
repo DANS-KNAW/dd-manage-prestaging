@@ -24,16 +24,16 @@ import java.util.stream.Collectors;
 public class CapturedStorageIdentifiersInDatabase implements CapturedStorageIdentifiers {
     private final BasicFileMetaDAO basicFileMetaDAO;
 
-    CapturedStorageIdentifiersInDatabase(BasicFileMetaDAO basicFileMetaDAO) {
+    public CapturedStorageIdentifiersInDatabase(BasicFileMetaDAO basicFileMetaDAO) {
         this.basicFileMetaDAO = basicFileMetaDAO;
     }
 
     @Override
     @UnitOfWork
-    // TODO: remove doubles? (a storage identifier can appear in several versions)
     public List<String> getForDoi(String doi) {
         return basicFileMetaDAO.findByDoi(doi).stream()
                 .map(BasicFileMetaEntity::getStorageIdentifier)
+                .distinct()
                 .collect(Collectors.toList());
     }
 }

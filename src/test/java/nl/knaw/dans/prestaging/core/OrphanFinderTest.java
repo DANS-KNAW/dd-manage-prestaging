@@ -29,34 +29,46 @@ public class OrphanFinderTest {
     private static final Path testStorageDirs = Paths.get("src/test/resources/test-storage-dirs/");
 
     @Test
-    public void findsOrphanInDoiDirectory() throws Exception {
-        Path storageDir = testStorageDirs.resolve("10.1234/SHLDR");
-        CapturedStorageIdentifiers csi = new CaptureStorageIdentifiersImpl(Arrays.asList("file://00000000000-000000000001", "file://00000000000-000000000002"));
+    public void findsOrphansInShoulderedDoisDirectory() throws Exception {
+        Path namespaceDir = testStorageDirs.resolve("10.1234");
+        CapturedStorageIdentifiersImpl csi = new CapturedStorageIdentifiersImpl();
+        csi.setForDoi("doi:10.1234/SHLDR/my-suffix-1", Arrays.asList("file://00000000000-000000000001", "file://00000000000-000000000002"));
         ListOrphanRegister orphanRegister = new ListOrphanRegister();
-        StorageNamespace namespace = new StorageNamespace(storageDir, null);
+        StorageNamespace namespace = new StorageNamespace(namespaceDir, "SHLDR");
         OrphanFinder finder = new OrphanFinder(Collections.singletonList(namespace), csi, orphanRegister);
         finder.searchStorageDirs();
-        assertEquals(Collections.singletonList(
-                        storageDir.resolve("my-suffix-1").resolve("00000000000-000000000003")),
+        assertEquals(Collections.singletonList(namespaceDir.resolve("SHLDR/my-suffix-1/00000000000-000000000003")),
+                orphanRegister.getOrphans());
+    }
+
+    @Test
+    public void findsOrphansInUnShoulderedDoisDirectory() throws Exception {
+        Path namespaceDir = testStorageDirs.resolve("10.1235");
+        CapturedStorageIdentifiersImpl csi = new CapturedStorageIdentifiersImpl();
+        csi.setForDoi("doi:10.1235/my-suffix-1", Arrays.asList("file://00000000000-000000000001", "file://00000000000-000000000002"));
+        ListOrphanRegister orphanRegister = new ListOrphanRegister();
+        StorageNamespace namespace = new StorageNamespace(namespaceDir, null);
+        OrphanFinder finder = new OrphanFinder(Collections.singletonList(namespace), csi, orphanRegister);
+        finder.searchStorageDirs();
+        assertEquals(Collections.singletonList(namespaceDir.resolve("my-suffix-1/00000000000-000000000003")),
                 orphanRegister.getOrphans());
     }
 
     @Test
     public void canHandleEmptyDoiDirectory() throws Exception {
-        Path storageDir = testStorageDirs.resolve("empty");
-        CapturedStorageIdentifiers csi = new CaptureStorageIdentifiersImpl(Collections.emptyList());
+        Path namespaceDir = testStorageDirs.resolve("empty");
+        CapturedStorageIdentifiersImpl csi = new CapturedStorageIdentifiersImpl();
         ListOrphanRegister orphanRegister = new ListOrphanRegister();
-        StorageNamespace namespace = new StorageNamespace(storageDir, null);
+        StorageNamespace namespace = new StorageNamespace(namespaceDir, null);
         OrphanFinder finder = new OrphanFinder(Collections.singletonList(namespace), csi, orphanRegister);
         finder.searchStorageDirs();
         assertEquals(Collections.emptyList(), orphanRegister.getOrphans());
 
     }
 
-    // TODO: use shoulder
-
     // TODO: ignores cached, .orig and thumb files
 
     // TODO: calculate DOI from path
+
 
 }

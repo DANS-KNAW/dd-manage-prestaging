@@ -22,15 +22,16 @@ dataverse:
   baseUrl: 'http://localhost:8080/'
   apiKey: changeme
 
+storageBaseDir: '/data/dataverse'
+
 logging:
   level: WARN
   loggers:
     nl.knaw.dans:
       level: INFO
-      additive: false
   appenders:
     - type: console
-      logFormat: "%m%n%rEx"
+      logFormat: "%m%n"
 
     - type: file
       currentLogFilename: ${DD_MANAGE_PRESTAGING_LOGDIR:-.}/dd-manage-prestaging.log

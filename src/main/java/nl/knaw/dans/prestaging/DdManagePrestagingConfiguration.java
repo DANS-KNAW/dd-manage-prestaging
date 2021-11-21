@@ -34,6 +34,9 @@ public class DdManagePrestagingConfiguration extends Configuration {
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
 
+
+    private String storageBaseDir;
+
     public DataverseClientFactory getDataverse() {
         return dataverse;
     }
@@ -52,4 +55,11 @@ public class DdManagePrestagingConfiguration extends Configuration {
         this.database = dataSourceFactory;
     }
 
+    public String getStorageBaseDir() {
+        return storageBaseDir;
+    }
+
+    public void setStorageBaseDir(String storageBaseDir) {
+        this.storageBaseDir = storageBaseDir;
+    }
 }

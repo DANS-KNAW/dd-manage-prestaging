@@ -38,11 +38,16 @@ public class BasicFileMetaDAO extends AbstractDAO<BasicFileMetaEntity> {
         return basicFileMeta;
     }
 
+    public List<BasicFileMetaEntity> findByDoi(String doi) {
+        return namedTypedQuery("BasicFileMetaEntity.findByDoi")
+                .setParameter("doi", doi)
+                .getResultList();
+    }
+
     public List<BasicFileMetaEntity> findByDoiAndSeqNr(String doi, int seqNr) {
-        return namedTypedQuery("BasicFileMetaKey.findByDoiAndSeqNr")
+        return namedTypedQuery("BasicFileMetaEntity.findByDoiAndSeqNr")
                 .setParameter("doi", doi)
                 .setParameter("seqNr", seqNr)
                 .getResultList();
     }
-
 }

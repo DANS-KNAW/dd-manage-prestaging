@@ -25,6 +25,7 @@ import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.PersistenceException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -37,11 +38,13 @@ public class BasicFileMetaLoader {
 
     private final BasicFileMetaDAO dao;
     private final DataverseClient dataverseClient;
+    private final boolean failOnError;
 
-    public BasicFileMetaLoader(BasicFileMetaDAO dao, DataverseClient dataverseClient) {
+    public BasicFileMetaLoader(BasicFileMetaDAO dao, DataverseClient dataverseClient, Boolean failOnError) {
         log.trace("ENTER");
         this.dao = dao;
         this.dataverseClient = dataverseClient;
+        this.failOnError = failOnError;
     }
 
     public void loadFromDatasets(Iterator<String> dois) {
@@ -53,12 +56,19 @@ public class BasicFileMetaLoader {
     public void loadFromDataset(String doi) {
         log.trace("ENTER");
         try {
+            log.debug("Getting versions for DOI {}", doi);
             DataverseResponse<List<DatasetVersion>> r = dataverseClient.dataset(doi).getAllVersions();
             List<DatasetVersion> versions = r.getData();
             versions.sort(new DatasetVersionComparator());
             int seqNum = 1;
             for (DatasetVersion v : versions) {
-                loadFromDatasetVersion(doi, v, seqNum);
+                try {
+                    loadFromDatasetVersion(doi, v, seqNum);
+                } catch (PersistenceException e) {
+                    // Catch outside UnitOfWork, as exceptions will not occur until commit.
+                    log.error("Error saving basic file metas for DOI {}, seqNr {}: {}", doi, seqNum, e.getMessage());
+                    if (failOnError) throw new RuntimeException(e);
+                }
                 log.info("Stored {} basic file metas for DOI {}, Version seqNr {}", v.getFiles().size(), doi, seqNum);
                 ++seqNum;
             }
@@ -82,5 +92,6 @@ public class BasicFileMetaLoader {
             dao.create(basicFileMeta);
             log.debug("Stored file, label: {}, directoryLabel: {}", basicFileMeta.getFileName(), basicFileMeta.getDirectoryLabel());
         }
+
     }
 }

@@ -20,6 +20,8 @@ import io.dropwizard.cli.EnvironmentCommand;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Environment;
+import net.sourceforge.argparse4j.impl.Arguments;
+import net.sourceforge.argparse4j.inf.ArgumentAction;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import nl.knaw.dans.lib.dataverse.DataverseClient;
@@ -45,6 +47,10 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
         subparser.addArgument("--doi")
                 .dest("doi")
                 .help("The DOI for which to load the basic file metas");
+        subparser.addArgument("--fail-on-error")
+                .action(Arguments.storeTrue())
+                .dest("failOnError")
+                .help("The DOI for which to load the basic file metas");
     }
 
     @Override
@@ -55,12 +61,14 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
         // https://stackoverflow.com/questions/42384671/dropwizard-hibernate-no-session-currently-bound-to-execution-context
         BasicFileMetaLoader loaderProxy = new UnitOfWorkAwareProxyFactory(hibernate).create(
                 BasicFileMetaLoader.class,
-                new Class[]{BasicFileMetaDAO.class, DataverseClient.class},
-                new Object[]{dao, client});
+                new Class[]{BasicFileMetaDAO.class, DataverseClient.class, Boolean.class},
+                new Object[]{dao, client, namespace.getBoolean("failOnError")});
         String doi = namespace.getString("doi");
         if (doi == null) {
+            log.info("No DOI provided, loading all published datasets");
             loaderProxy.loadFromDatasets(new GlobalIdIterator(client, "publicationStatus:\"Published\""));
         } else {
+            log.info("Loading from provided DOI {}", doi);
             loaderProxy.loadFromDataset(doi);
         }
     }

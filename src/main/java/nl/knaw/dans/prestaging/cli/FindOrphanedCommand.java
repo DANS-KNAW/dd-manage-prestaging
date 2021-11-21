@@ -29,6 +29,7 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,11 +58,13 @@ public class FindOrphanedCommand extends EnvironmentCommand<DdManagePrestagingCo
         log.trace("ENTER");
         BasicFileMetaDAO dao = new BasicFileMetaDAO(hibernate.getSessionFactory());
         Path outputFile = Paths.get(namespace.getString("ouputFile"));
-        OrphanRegister register = new WriterOrphanRegister(new FileWriterWithEncoding(outputFile.toFile(), StandardCharsets.UTF_8));
-        OrphanFinder finderProxy = new UnitOfWorkAwareProxyFactory(hibernate).create(
-                OrphanFinder.class,
-                new Class[]{List.class, CapturedStorageIdentifiers.class, OrphanRegister.class},
-                new Object[]{configuration.getStorage().getNamespaces(), new CapturedStorageIdentifiersInDatabase(dao), register});
-        finderProxy.searchStorageDirs();
+        try(Writer w = new FileWriterWithEncoding(outputFile.toFile(), StandardCharsets.UTF_8)) {
+            OrphanRegister register = new WriterOrphanRegister(w);
+            OrphanFinder finderProxy = new UnitOfWorkAwareProxyFactory(hibernate).create(
+                    OrphanFinder.class,
+                    new Class[]{List.class, CapturedStorageIdentifiers.class, OrphanRegister.class},
+                    new Object[]{configuration.getStorage().getNamespaces(), new CapturedStorageIdentifiersInDatabase(dao), register});
+            finderProxy.searchStorageDirs();
+        }
     }
 }

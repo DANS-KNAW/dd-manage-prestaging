@@ -52,6 +52,12 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
                 .action(Arguments.storeTrue())
                 .dest("failOnError")
                 .help("Fail the run at the first error");
+        subparser.addArgument("--include-easy-migration")
+                .type(Boolean.class)
+                .action(Arguments.storeTrue())
+                .dest("includeEasyMigration")
+                .help("Include easy-migration metadata files");
+
     }
 
     @Override
@@ -62,8 +68,8 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
         // https://stackoverflow.com/questions/42384671/dropwizard-hibernate-no-session-currently-bound-to-execution-context
         BasicFileMetaLoader loaderProxy = new UnitOfWorkAwareProxyFactory(hibernate).create(
                 BasicFileMetaLoader.class,
-                new Class[]{BasicFileMetaDAO.class, DataverseClient.class, Boolean.class},
-                new Object[]{dao, client, namespace.getBoolean("failOnError")});
+                new Class[]{BasicFileMetaDAO.class, DataverseClient.class, Boolean.class, Boolean.class},
+                new Object[]{dao, client, namespace.getBoolean("failOnError"), namespace.getBoolean("includeEasyMigration")});
         String doi = namespace.getString("doi");
         if (doi == null) {
             log.info("No DOI provided, loading all published datasets");

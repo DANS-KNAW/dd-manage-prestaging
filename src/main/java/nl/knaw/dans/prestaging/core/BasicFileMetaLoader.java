@@ -39,12 +39,14 @@ public class BasicFileMetaLoader {
     private final BasicFileMetaDAO dao;
     private final DataverseClient dataverseClient;
     private final boolean failOnError;
+    private final boolean includeEasyMigration;
 
-    public BasicFileMetaLoader(BasicFileMetaDAO dao, DataverseClient dataverseClient, Boolean failOnError) {
+    public BasicFileMetaLoader(BasicFileMetaDAO dao, DataverseClient dataverseClient, Boolean failOnError, Boolean includeEasyMigration) {
         log.trace("ENTER");
         this.dao = dao;
         this.dataverseClient = dataverseClient;
         this.failOnError = failOnError;
+        this.includeEasyMigration = includeEasyMigration;
     }
 
     public void loadFromDatasets(Iterator<String> dois) {
@@ -82,6 +84,10 @@ public class BasicFileMetaLoader {
     public void loadFromDatasetVersion(String doi, DatasetVersion v, int seqNum) {
         log.trace("ENTER");
         for (FileMeta f : v.getFiles()) {
+            if (!includeEasyMigration && "easy-migration".equals(f.getDataFile().toString())) {
+                log.debug("Skipping easy-migration file");
+                continue;
+            }
             BasicFileMetaEntity basicFileMeta = new BasicFileMetaEntity();
             basicFileMeta.setDatasetDoi(doi);
             basicFileMeta.setStorageIdentifier(f.getDataFile().getStorageIdentifier());

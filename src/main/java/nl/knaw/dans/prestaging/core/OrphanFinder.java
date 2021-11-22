@@ -15,22 +15,21 @@
  */
 package nl.knaw.dans.prestaging.core;
 
+import io.dropwizard.hibernate.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class OrphanFinder {
     private static final Logger log = LoggerFactory.getLogger(OrphanFinder.class);
-    private static final Pattern storedFilePattern = Pattern.compile("^\\d+-\\d+$");
+    private static final Pattern storedFilePattern = Pattern.compile("^\\p{XDigit}+-\\p{XDigit}+$");
 
     private final List<StorageNamespace> storageNamespaces;
     private final CapturedStorageIdentifiers capturedStorageIdentifiers;
@@ -58,14 +57,15 @@ public class OrphanFinder {
         log.info("END: STORAGE DIR {}", namespace);
     }
 
+    @UnitOfWork
     void searchDatasetStorageDir(Path doiDir, String doi) throws IOException {
         log.info("Inspecting {}", doiDir);
 
-        log.debug("Getting expected storage identifiers for DOI {}", doi);
-        Set<String> expected = new HashSet<>(capturedStorageIdentifiers.getForDoi(doi));
+        List<String> expected = capturedStorageIdentifiers.getForDoi(doi);
+        log.debug("Expected = {}", expected);
 
-        log.debug("Getting storage identifiers found on disk");
         List<Path> found = getStoredFilesOnDisk(doiDir);
+        log.debug("Found = {}", found);
 
         log.debug("Removing expected from found");
         List<Path> unexpected = found.stream()

@@ -44,4 +44,12 @@ public class StorageNamespace {
     public void setShoulder(String shoulder) {
         this.shoulder = shoulder;
     }
+
+    @Override
+    public String toString() {
+        return "StorageNamespace{" +
+                "dir=" + dir +
+                ", shoulder='" + shoulder + '\'' +
+                '}';
+    }
 }

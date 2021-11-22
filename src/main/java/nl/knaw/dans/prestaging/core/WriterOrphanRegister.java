@@ -16,18 +16,18 @@
 package nl.knaw.dans.prestaging.core;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 
 public class WriterOrphanRegister implements OrphanRegister {
-    private final Writer writer;
+    private final PrintWriter printWriter;
 
-    public WriterOrphanRegister(Writer writer) {
-        this.writer = writer;
+    public WriterOrphanRegister(PrintWriter writer) {
+        this.printWriter = writer;
     }
 
     @Override
     public void register(Path orphanedFile) throws IOException {
-        writer.write(orphanedFile.toString());
+        printWriter.println(orphanedFile.toString());
     }
 }

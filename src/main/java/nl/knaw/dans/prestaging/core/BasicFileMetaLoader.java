@@ -64,16 +64,17 @@ public class BasicFileMetaLoader {
             for (DatasetVersion v : versions) {
                 try {
                     loadFromDatasetVersion(doi, v, seqNum);
+                    log.info("Stored {} basic file metas for DOI {}, Version seqNr {}", v.getFiles().size(), doi, seqNum);
+                    ++seqNum;
                 } catch (PersistenceException e) {
                     // Catch outside UnitOfWork, as exceptions will not occur until commit.
                     log.error("Error saving basic file metas for DOI {}, seqNr {}: {}", doi, seqNum, e.getMessage());
                     if (failOnError) throw new RuntimeException(e);
                 }
-                log.info("Stored {} basic file metas for DOI {}, Version seqNr {}", v.getFiles().size(), doi, seqNum);
-                ++seqNum;
             }
         } catch (IOException | DataverseException e) {
             log.error("Could not retrieve or store basic file metas for DOI: {}", doi, e);
+            if (failOnError) throw new RuntimeException(e);
         }
     }
 

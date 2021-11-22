@@ -48,9 +48,10 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
                 .dest("doi")
                 .help("The DOI for which to load the basic file metas");
         subparser.addArgument("--fail-on-error")
+                .type(Boolean.class)
                 .action(Arguments.storeTrue())
                 .dest("failOnError")
-                .help("The DOI for which to load the basic file metas");
+                .help("Fail the run at the first error");
     }
 
     @Override

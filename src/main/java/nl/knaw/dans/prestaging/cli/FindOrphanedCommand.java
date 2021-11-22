@@ -29,7 +29,7 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +37,7 @@ import java.util.List;
 
 public class FindOrphanedCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
     private static final Logger log = LoggerFactory.getLogger(FindOrphanedCommand.class);
+    private static final String outputFile = "outputFile";
     private final HibernateBundle<DdManagePrestagingConfiguration> hibernate;
 
     public FindOrphanedCommand(Application<DdManagePrestagingConfiguration> application, HibernateBundle<DdManagePrestagingConfiguration> hibernate) {
@@ -49,7 +50,7 @@ public class FindOrphanedCommand extends EnvironmentCommand<DdManagePrestagingCo
         super.configure(subparser);
         subparser.addArgument("-o", "--output-file")
                 .required(true)
-                .dest("outputFile")
+                .dest(outputFile)
                 .help("The file to write the orphan paths to");
     }
 
@@ -57,8 +58,8 @@ public class FindOrphanedCommand extends EnvironmentCommand<DdManagePrestagingCo
     protected void run(Environment environment, Namespace namespace, DdManagePrestagingConfiguration configuration) throws Exception {
         log.trace("ENTER");
         BasicFileMetaDAO dao = new BasicFileMetaDAO(hibernate.getSessionFactory());
-        Path outputFile = Paths.get(namespace.getString("ouputFile"));
-        try(Writer w = new FileWriterWithEncoding(outputFile.toFile(), StandardCharsets.UTF_8)) {
+        Path outPath = Paths.get(namespace.getString(outputFile));
+        try (PrintWriter w = new PrintWriter(new FileWriterWithEncoding(outPath.toFile(), StandardCharsets.UTF_8))) {
             OrphanRegister register = new WriterOrphanRegister(w);
             OrphanFinder finderProxy = new UnitOfWorkAwareProxyFactory(hibernate).create(
                     OrphanFinder.class,

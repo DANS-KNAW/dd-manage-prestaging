@@ -65,8 +65,8 @@ public class BasicFileMetaLoader {
             int seqNum = 1;
             for (DatasetVersion v : versions) {
                 try {
-                    loadFromDatasetVersion(doi, v, seqNum);
-                    log.info("Stored {} basic file metas for DOI {}, Version seqNr {}", v.getFiles().size(), doi, seqNum);
+                    int count = loadFromDatasetVersion(doi, v, seqNum);
+                    log.info("Stored {} basic file metas for DOI {}, Version seqNr {}", count, doi, seqNum);
                     ++seqNum;
                 } catch (PersistenceException e) {
                     // Catch outside UnitOfWork, as exceptions will not occur until commit.
@@ -81,10 +81,11 @@ public class BasicFileMetaLoader {
     }
 
     @UnitOfWork
-    public void loadFromDatasetVersion(String doi, DatasetVersion v, int seqNum) {
+    public int loadFromDatasetVersion(String doi, DatasetVersion v, int seqNum) {
         log.trace("ENTER");
+        int count = 0;
         for (FileMeta f : v.getFiles()) {
-            if (!includeEasyMigration && "easy-migration".equals(f.getDataFile().toString())) {
+            if (!includeEasyMigration && "easy-migration".equals(f.getDirectoryLabel())) {
                 log.debug("Skipping easy-migration file");
                 continue;
             }
@@ -97,8 +98,9 @@ public class BasicFileMetaLoader {
             basicFileMeta.setMimeType(f.getDataFile().getContentType());
             basicFileMeta.setSha1Checksum(f.getDataFile().getChecksum().getValue());
             dao.create(basicFileMeta);
+            ++count;
             log.debug("Stored file, label: {}, directoryLabel: {}", basicFileMeta.getFileName(), basicFileMeta.getDirectoryLabel());
         }
-
+        return count;
     }
 }

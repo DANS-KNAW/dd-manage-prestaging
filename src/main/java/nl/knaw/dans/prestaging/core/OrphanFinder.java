@@ -50,9 +50,13 @@ public class OrphanFinder {
     public void searchStorageNamespace(StorageNamespace namespace) throws IOException {
         log.info("START: STORAGE DIR {}", namespace);
         Path nameSpaceDir = namespace.getDir().resolve(Optional.ofNullable(namespace.getShoulder()).orElse(""));
-        List<Path> subDirs = Files.list(nameSpaceDir).filter(Files::isDirectory).collect(Collectors.toList());
-        for (Path subDir : subDirs) {
-            searchDatasetStorageDir(subDir, getDoi(namespace, subDir));
+        if (Files.isDirectory(nameSpaceDir)) {
+            List<Path> subDirs = Files.list(nameSpaceDir).filter(Files::isDirectory).collect(Collectors.toList());
+            for (Path subDir : subDirs) {
+                searchDatasetStorageDir(subDir, getDoi(namespace, subDir));
+            }
+        } else {
+            log.warn("Directory {} does not exist (or is a regular file). Ignoring...", nameSpaceDir);
         }
         log.info("END: STORAGE DIR {}", namespace);
     }

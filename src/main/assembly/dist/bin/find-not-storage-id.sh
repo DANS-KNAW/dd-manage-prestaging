@@ -8,4 +8,4 @@ fi
 
 DIR=$1
 
-find /data/dataverse -type f -not -regex '^.*/[0-9a-f]+-[0-9a-f]+$'
+find $DIR -type f -not -regex '^.*/[0-9a-f]+-[0-9a-f]+$'

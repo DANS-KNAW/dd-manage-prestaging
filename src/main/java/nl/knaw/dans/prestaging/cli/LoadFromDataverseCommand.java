@@ -21,16 +21,24 @@ import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Environment;
 import net.sourceforge.argparse4j.impl.Arguments;
-import net.sourceforge.argparse4j.inf.ArgumentAction;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import nl.knaw.dans.lib.dataverse.DataverseClient;
+import nl.knaw.dans.lib.dataverse.SearchOptions;
+import nl.knaw.dans.lib.dataverse.model.search.DatasetResultItem;
+import nl.knaw.dans.lib.dataverse.model.search.ResultItem;
+import nl.knaw.dans.lib.dataverse.model.search.SearchItemType;
 import nl.knaw.dans.prestaging.DdManagePrestagingConfiguration;
 import nl.knaw.dans.prestaging.core.BasicFileMetaLoader;
-import nl.knaw.dans.prestaging.core.GlobalIdIterator;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
 
 public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
     private static final Logger log = LoggerFactory.getLogger(LoadFromDataverseCommand.class);
@@ -73,10 +81,17 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
         String doi = namespace.getString("doi");
         if (doi == null) {
             log.info("No DOI provided, loading all published datasets");
-            loaderProxy.loadFromDatasets(new GlobalIdIterator(client, "publicationStatus:\"Published\""));
+            SearchOptions options = new SearchOptions();
+            options.setTypes(Collections.singletonList(SearchItemType.dataset));
+            loaderProxy.loadFromDatasets(toDoiIterator(client.search().iterator("publicationStatus:\"Published\"", options)));
         } else {
             log.info("Loading from provided DOI {}", doi);
             loaderProxy.loadFromDataset(doi);
         }
+    }
+
+    private Iterator<String> toDoiIterator(Iterator<ResultItem> iterator) {
+        Spliterator<ResultItem> spliterator = Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED);
+        return StreamSupport.stream(spliterator, false).map(ri -> ((DatasetResultItem) ri).getGlobalId()).iterator();
     }
 }

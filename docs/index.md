@@ -32,17 +32,34 @@ ensure that not storage is wasted on orphaned files:
    database, because they are bound to change from one iteration to the next.
 4. Find the other files that Dataverse keeps, that cannot be reused:
    ```
-   find <dataverse-files-dir> -type f | grep cached > cached.txt
-   find <dataverse-files-dir> -type f | grep thumb > thumb.txt
+   find-cached.sh /data/dataverse/files > cached.txt
+   find-thumbs.sh /data/dataverse/files > thumbs.txt
    ```
 5. Remove the Dataverse installation.
-6. Delete the cached, thumbs files from storage.
+6. Delete the cached, thumbs files from storage:
+   ```
+   sudo su dataverse
+   bulk-remove.sh cached.txt
+   bulk-remove.sh thumbs.txt
+   ```
 7. The file count should now be exactly the same a the number of unique storage identifiers in the pre-staged file database.
-   (Note that files can appear in multiple versions, so the storage identifiers are not unique by themselves!)
+   (Note that files can appear in multiple versions, so the storage identifiers are not unique by themselves!) If not, use
+   `find-not-storage-id.sh` to find any files whose names do not fit the storage ID pattern. Possibly there are `.orig` or
+   `.bak` files. 
 8. Install Dataverse.
 9. Start an import with pre-staged files.
 
-To do: describe how to deal with `.bak` and `.orig`.
+### Helper scripts
+
+* `bulk-remove.sh` - removes files specified in the input file
+* `count-files.sh` - counts all the files under a base directory; only regular files, not directories
+* `count-lines.sh` - counts the lines all the input files specified as arguments; useful for find the grand total of multiple input files
+* `export-prestaging-info.sh` - dumps the pre-staging database to a ZIP file
+* `import-prestaging-info.sh` - reads the output of `export-prestaging-info` in an empty database
+* `find-cached.sh` - finds files with extension `.cached`
+* `find-thumbs.sh` - finds files with extension `.thumb*`.
+* `find-no-storage-id.sh` - finds the files whose names are not storage IDs; should return zero files if pre-staging has been prepared successfully.
+* `find-storage-ids-on-disk.sh` - finds all the files whose names *are* storage IDs; useful for comparing the total with the total in de database
 
 ARGUMENTS
 ---------

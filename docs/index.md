@@ -17,7 +17,7 @@ iterative approach when migrating the metadata. Each iteration of the migration 
 
 ### Starting a new migration round.
 Not all files in the storage directory can be reused in the next iteration. The following process should be followed to 
-ensure that not storage is wasted on orphaned files:
+ensure that no storage is wasted on orphaned files:
 
 1. After the migration round, build a new database of pre-staged file information:
    ```
@@ -36,16 +36,18 @@ ensure that not storage is wasted on orphaned files:
    find-thumbs.sh /data/dataverse/files > thumbs.txt
    ```
 5. Remove the Dataverse installation.
-6. Delete the cached, thumbs files from storage:
+6. Delete the cached, thumbs and orphaned files from storage:
    ```
    sudo su dataverse
    bulk-remove.sh cached.txt
    bulk-remove.sh thumbs.txt
+   bulk-remove.sh orphans.txt
    ```
 7. The file count should now be exactly the same a the number of unique storage identifiers in the pre-staged file database.
-   (Note that files can appear in multiple versions, so the storage identifiers are not unique by themselves!) If not, use
-   `find-not-storage-id.sh` to find any files whose names do not fit the storage ID pattern. Possibly there are `.orig` or
-   `.bak` files. 
+   (Note that files can appear in multiple versions, so simply counting the records in the pre-staged file database will not
+   yield the correct answer!) If not, use `find-not-storage-id.sh` to find any files whose names do not fit the storage ID pattern. 
+   Possibly there are `.orig` or `.bak` files. (The creation of these should be avoided by turning of ingest of tabular data during
+   the migration, until all data has been migrated and all metadata is OK, so no more migration rounds are needed.)
 8. Install Dataverse.
 9. Start an import with pre-staged files.
 
@@ -58,7 +60,7 @@ ensure that not storage is wasted on orphaned files:
 * `import-prestaging-info.sh` - reads the output of `export-prestaging-info` in an empty database
 * `find-cached.sh` - finds files with extension `.cached`
 * `find-thumbs.sh` - finds files with extension `.thumb*`.
-* `find-no-storage-id.sh` - finds the files whose names are not storage IDs; should return zero files if pre-staging has been prepared successfully.
+* `find-not-storage-id.sh` - finds the files whose names are not storage IDs; should return zero files if pre-staging has been prepared successfully.
 * `find-storage-ids-on-disk.sh` - finds all the files whose names *are* storage IDs; useful for comparing the total with the total in de database
 
 ARGUMENTS

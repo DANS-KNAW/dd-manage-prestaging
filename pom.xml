@@ -27,7 +27,7 @@
 
     <groupId>nl.knaw.dans</groupId>
     <artifactId>dd-manage-prestaging</artifactId>
-    <version>0.0.13-SNAPSHOT</version>
+    <version>0.0.13</version>
 
     <name>Dd Manage Prestaging</name>
     <url>https://github.com/DANS-KNAW/dd-manage-prestaging</url>
@@ -40,7 +40,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/DANS-KNAW/dd-manage-prestaging</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v0.0.13</tag>
     </scm>
 
     <dependencies>

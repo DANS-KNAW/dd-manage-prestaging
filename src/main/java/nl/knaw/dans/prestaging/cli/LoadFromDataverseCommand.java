@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
@@ -83,15 +84,16 @@ public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestag
             log.info("No DOI provided, loading all published datasets");
             SearchOptions options = new SearchOptions();
             options.setTypes(Collections.singletonList(SearchItemType.dataset));
-            loaderProxy.loadFromDatasets(toDoiIterator(client.search().iterator("publicationStatus:\"Published\"", options)));
+            toDoiStream(client.search().iterator("publicationStatus:\"Published\"", options))
+                    .forEach(loaderProxy::loadFromDataset);
         } else {
             log.info("Loading from provided DOI {}", doi);
             loaderProxy.loadFromDataset(doi);
         }
     }
 
-    private Iterator<String> toDoiIterator(Iterator<ResultItem> iterator) {
+    private Stream<String> toDoiStream(Iterator<ResultItem> iterator) {
         Spliterator<ResultItem> spliterator = Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED);
-        return StreamSupport.stream(spliterator, false).map(ri -> ((DatasetResultItem) ri).getGlobalId()).iterator();
+        return StreamSupport.stream(spliterator, false).map(ri -> ((DatasetResultItem) ri).getGlobalId());
     }
 }

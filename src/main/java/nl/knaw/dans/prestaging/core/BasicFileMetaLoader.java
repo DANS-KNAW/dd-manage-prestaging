@@ -27,11 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.PersistenceException;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.StreamSupport;
 
 public class BasicFileMetaLoader {
     private static final Logger log = LoggerFactory.getLogger(BasicFileMetaLoader.class);
@@ -47,12 +43,6 @@ public class BasicFileMetaLoader {
         this.dataverseClient = dataverseClient;
         this.failOnError = failOnError;
         this.includeEasyMigration = includeEasyMigration;
-    }
-
-    public void loadFromDatasets(Iterator<String> dois) {
-        log.trace("ENTER");
-        Spliterator<String> spliterator = Spliterators.spliteratorUnknownSize(dois, Spliterator.ORDERED);
-        StreamSupport.stream(spliterator, false).forEach(this::loadFromDataset);
     }
 
     public void loadFromDataset(String doi) {

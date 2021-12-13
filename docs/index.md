@@ -62,6 +62,7 @@ ensure that no storage is wasted on orphaned files:
 * `find-thumbs.sh` - finds files with extension `.thumb*`.
 * `find-not-storage-id.sh` - finds the files whose names are not storage IDs; should return zero files if pre-staging has been prepared successfully.
 * `find-storage-ids-on-disk.sh` - finds all the files whose names *are* storage IDs; useful for comparing the total with the total in de database
+* `progress-report.sh` - prints how many deposits to go, how many processed, rejected and failed for a batch in progress
 
 ARGUMENTS
 ---------

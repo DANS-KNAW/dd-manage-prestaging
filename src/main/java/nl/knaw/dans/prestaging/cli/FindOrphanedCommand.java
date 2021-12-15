@@ -22,6 +22,7 @@ import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Environment;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
+import nl.knaw.dans.lib.util.DefaultConfigEnvironmentCommand;
 import nl.knaw.dans.prestaging.DdManagePrestagingConfiguration;
 import nl.knaw.dans.prestaging.core.*;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
@@ -35,7 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class FindOrphanedCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
+public class FindOrphanedCommand extends DefaultConfigEnvironmentCommand<DdManagePrestagingConfiguration> {
     private static final Logger log = LoggerFactory.getLogger(FindOrphanedCommand.class);
     private static final String outputFile = "outputFile";
     private final HibernateBundle<DdManagePrestagingConfiguration> hibernate;

@@ -28,6 +28,7 @@ import nl.knaw.dans.lib.dataverse.SearchOptions;
 import nl.knaw.dans.lib.dataverse.model.search.DatasetResultItem;
 import nl.knaw.dans.lib.dataverse.model.search.ResultItem;
 import nl.knaw.dans.lib.dataverse.model.search.SearchItemType;
+import nl.knaw.dans.lib.util.DefaultConfigEnvironmentCommand;
 import nl.knaw.dans.prestaging.DdManagePrestagingConfiguration;
 import nl.knaw.dans.prestaging.core.BasicFileMetaLoader;
 import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
@@ -41,7 +42,7 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class LoadFromDataverseCommand extends EnvironmentCommand<DdManagePrestagingConfiguration> {
+public class LoadFromDataverseCommand extends DefaultConfigEnvironmentCommand<DdManagePrestagingConfiguration> {
     private static final Logger log = LoggerFactory.getLogger(LoadFromDataverseCommand.class);
     private final HibernateBundle<DdManagePrestagingConfiguration> hibernate;
 

@@ -5,12 +5,4 @@ BINPATH=$(command readlink -f $0 2> /dev/null || command grealpath $0 2> /dev/nu
 APPHOME=$(dirname  $(dirname $BINPATH))
 CONFIG_PATH=/etc/opt/dans.knaw.nl/$SCRIPTNAME/config.yml
 
-# If last_arg arg is config.yml, use that instead of the one in etc
-# See: https://stackoverflow.com/a/1853993
-# Note: last_arg must not start with a dash, otherwise basename will choke on it
-for last_arg; do true; done
-if [[ $last_arg =~ ^[^-].*$ ]] && [[ $(basename $last_arg) ==  config.yml ]]; then
-  CONFIG_PATH=""
-fi
-
-java -jar $APPHOME/bin/$SCRIPTNAME.jar "$@" $CONFIG_PATH
+java -Ddans.default.config=$CONFIG_PATH -jar $APPHOME/bin/$SCRIPTNAME.jar "$@"

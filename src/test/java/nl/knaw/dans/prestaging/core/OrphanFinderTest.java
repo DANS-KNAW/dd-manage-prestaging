@@ -65,10 +65,4 @@ public class OrphanFinderTest {
         assertEquals(Collections.emptyList(), orphanRegister.getOrphans());
 
     }
-
-    // TODO: ignores cached, .orig and thumb files
-
-    // TODO: calculate DOI from path
-
-
 }

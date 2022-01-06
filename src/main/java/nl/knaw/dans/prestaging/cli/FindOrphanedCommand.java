@@ -16,10 +16,10 @@
 package nl.knaw.dans.prestaging.cli;
 
 import io.dropwizard.Application;
-import io.dropwizard.cli.EnvironmentCommand;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Environment;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import nl.knaw.dans.lib.util.DefaultConfigEnvironmentCommand;
@@ -53,6 +53,11 @@ public class FindOrphanedCommand extends DefaultConfigEnvironmentCommand<DdManag
                 .required(true)
                 .dest(outputFile)
                 .help("The file to write the orphan paths to");
+        subparser.addArgument("--exclude-easy-migration")
+                .type(Boolean.class)
+                .action(Arguments.storeTrue())
+                .dest("excludeEasyMigration")
+                .help("Exclude easy-migration metadata files");
     }
 
     @Override
@@ -65,7 +70,7 @@ public class FindOrphanedCommand extends DefaultConfigEnvironmentCommand<DdManag
             OrphanFinder finderProxy = new UnitOfWorkAwareProxyFactory(hibernate).create(
                     OrphanFinder.class,
                     new Class[]{List.class, CapturedStorageIdentifiers.class, OrphanRegister.class},
-                    new Object[]{configuration.getStorage().getNamespaces(), new CapturedStorageIdentifiersInDatabase(dao), register});
+                    new Object[]{configuration.getStorage().getNamespaces(), new CapturedStorageIdentifiersInDatabase(dao, namespace.getBoolean("excludeEasyMigration")), register});
             finderProxy.searchStorageDirs();
         }
     }

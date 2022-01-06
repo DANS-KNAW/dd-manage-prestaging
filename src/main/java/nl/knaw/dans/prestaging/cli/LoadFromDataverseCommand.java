@@ -62,11 +62,11 @@ public class LoadFromDataverseCommand extends DefaultConfigEnvironmentCommand<Dd
                 .action(Arguments.storeTrue())
                 .dest("failOnError")
                 .help("Fail the run at the first error");
-        subparser.addArgument("--include-easy-migration")
+        subparser.addArgument("--exclude-easy-migration")
                 .type(Boolean.class)
                 .action(Arguments.storeTrue())
-                .dest("includeEasyMigration")
-                .help("Include easy-migration metadata files");
+                .dest("excludeEasyMigration")
+                .help("Exclude easy-migration metadata files");
 
     }
 
@@ -79,7 +79,7 @@ public class LoadFromDataverseCommand extends DefaultConfigEnvironmentCommand<Dd
         BasicFileMetaLoader loaderProxy = new UnitOfWorkAwareProxyFactory(hibernate).create(
                 BasicFileMetaLoader.class,
                 new Class[]{BasicFileMetaDAO.class, DataverseClient.class, Boolean.class, Boolean.class},
-                new Object[]{dao, client, namespace.getBoolean("failOnError"), namespace.getBoolean("includeEasyMigration")});
+                new Object[]{dao, client, namespace.getBoolean("failOnError"), namespace.getBoolean("excludeEasyMigration")});
         String doi = namespace.getString("doi");
         if (doi == null) {
             log.info("No DOI provided, loading all published datasets");

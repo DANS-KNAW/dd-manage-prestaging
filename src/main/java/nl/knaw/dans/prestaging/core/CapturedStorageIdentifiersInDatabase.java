@@ -20,18 +20,22 @@ import nl.knaw.dans.prestaging.db.BasicFileMetaDAO;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CapturedStorageIdentifiersInDatabase implements CapturedStorageIdentifiers {
     private final BasicFileMetaDAO basicFileMetaDAO;
+    private final boolean excludeEasyMigration;
 
-    public CapturedStorageIdentifiersInDatabase(BasicFileMetaDAO basicFileMetaDAO) {
+    public CapturedStorageIdentifiersInDatabase(BasicFileMetaDAO basicFileMetaDAO, boolean excludeEasyMigration) {
         this.basicFileMetaDAO = basicFileMetaDAO;
+        this.excludeEasyMigration = excludeEasyMigration;
     }
 
     @Override
     @UnitOfWork
     public List<String> getForDoi(String doi) {
         return basicFileMetaDAO.findByDoi(doi).stream()
+                .filter(bfm -> !excludeEasyMigration || !"easy-migration".equals(bfm.getDirectoryLabel()))
                 .map(BasicFileMetaEntity::getStorageIdentifier)
                 .distinct()
                 .collect(Collectors.toList());

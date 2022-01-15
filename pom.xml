@@ -29,7 +29,7 @@
     <artifactId>dd-manage-prestaging</artifactId>
     <version>0.0.16-SNAPSHOT</version>
 
-    <name>Dd Manage Prestaging</name>
+    <name>DD Manage Prestaging</name>
     <url>https://github.com/DANS-KNAW/dd-manage-prestaging</url>
     <description>Manage prestaging of Dataverse files for next migration round</description>
     <inceptionYear>2021</inceptionYear>

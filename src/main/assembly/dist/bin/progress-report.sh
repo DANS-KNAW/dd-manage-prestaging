@@ -11,9 +11,16 @@ OUT=$2
 
 echo "results at $(date)
 
+NUMBER OF DEPOSITS:
 todo      : $(ls -1 $DEPOSITS | wc -l)
 processed : $(ls -1 $OUT/processed/ | wc -l)
 rejected  : $(ls -1 $OUT/rejected/  | wc -l)
 failed    : $(ls -1 $OUT/failed/    | wc -l)
+
+DISK USAGE:
+todo      : $(du -sh $DEPOSITS)
+processed : $(du -sh $OUT/processed/)
+rejected  : $(du -sh $OUT/rejected/)
+failed    : $(du -sh $OUT/failed/)
 
 "

@@ -18,4 +18,5 @@ BINPATH=$(command readlink -f $0 2> /dev/null || command grealpath $0 2> /dev/nu
 export LOGBACK_CFG=$(dirname $BINPATH)/logback.xml
 echo "Using logback configuration at $LOGBACK_CFG"
 
+echo "Starting batch $DATE_BATCH at $(date)"
 time dd-dans-deposit-to-dataverse import $BATCHDIR $OUTDIR
